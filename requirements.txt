@@ -1,0 +1,4 @@
+# Runtime dependencies verified with Python 3.12.3.
+fastapi==0.146.0
+pydantic==2.14.1
+uvicorn==0.54.0
