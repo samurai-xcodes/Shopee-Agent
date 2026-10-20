@@ -318,8 +318,8 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 - 真实生成失败/结果未知时不自动重复计费；人工 retry 需要明确 acknowledge_possible_duplicate_charge。任何外部模型调用与检查点之间仍存在副作用窗口，不承诺 exactly-once 或绝不重复计费。
 - 观测：请求 X-Trace-ID、持久 task trace_id、节点/工具阶段、耗时、模型、模拟标记和可用 usage；按用户提供 P50/P95、任务状态及调用计数。无真实账单时费用字段为 null。
 - 验证：SQLite + 原生 PostgreSQL 16 双后端回归 87 passed；独立 API/Worker 进程脚本在 SQLite 与 PostgreSQL 上均通过，验证 API 重启后任务仍存在，并能确认/导出 PNG。数据库故障、Worker 失效、幂等并发、容量并发及越权有专门回归。
-- evals/cases.json 含 40 个模拟功能案例，最新一轮 40/40 通过；端到端 P50 190.38ms、P95 226.44ms，仅为本机 SQLite/mock 记录，不代表真实模型质量、生产延迟或账单。
-- evals/checkpoint_comparison.json 是控制实验：朴素“确认时重新生成三张图”实验基线为 3 次/101.15ms，实际持久确认恢复为 0 次/15.14ms。该基线是对照实验，不是已有线上版本的历史数据；不推算真实 API 费用。
+- evals/cases.json 含 40 个模拟功能案例，最新一轮 40/40 通过；端到端 P50 193.82ms、P95 243.78ms，仅为本机 SQLite/mock 记录，不代表真实模型质量、生产延迟或账单。
+- evals/checkpoint_comparison.json 是控制实验：朴素“确认时重新生成三张图”实验基线为 3 次/94.05ms，实际持久确认恢复为 0 次/14.72ms。该基线是对照实验，不是已有线上版本的历史数据；不推算真实 API 费用。
 - 交付：README、架构与来源记录、作品集描述/3 个故障案例、40 案例评测、真实进程 smoke、部署 smoke、浏览器 smoke、Dockerfile/Compose、GitHub Actions。requirements-runtime.lock 锁定 Linux/Python 3.12 运行依赖闭包，暂未添加哈希。
 - Docker Compose 已实际构建并启动 PostgreSQL/API/Worker，API 与 DB 健康；容器内完整创建→候选→价格编辑→确认→PNG 导出通过；重启 API 后已完成任务保留，重启 PostgreSQL 后仍能处理新任务。构建验证复用了本机缓存的发行包和镜像源，不引入仓库外业务代码。
 - 本机 .env/data/compose.env、数据库、图片、浏览器缓存及安装包不提交 Git；数据库口令随机生成。当前公开接口仅绑定本机地址，默认 mock + 开发身份。
@@ -339,3 +339,10 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 - 图片未自动重试，未静默替换 mock；只读模型列表未列出图像模型，但不据此断言供应商一定不支持图片。需要后续确认可用 Images API/模型配置。
 - 用户明确选择“图像服务稍后配置，先交付”。因此继续使用 mock 演示，不将真实图片质量或整个路线图标记完成。
 - evals/openai-smoke.json 保存脱敏验证摘要、可用文本 token 数和失败类型；不包含凭据、供应商主机地址或原始错误正文，账单费用仍为 null。
+
+### 2026-10-20：Git 交付核验
+
+- 功能主提交 71d9c31 已推送 origin/master，远程 refs 与本地提交核对一致。后续提交仅刷新最终评测记录与本文档。
+- 最终回归 87 passed；SQLite/PostgreSQL 独立进程 smoke 均通过；浏览器创建、预览、修改、确认和 PNG 下载复测通过。最终 mock 功能评测为 40/40，具体延迟及控制比较以 evals/ 中 JSON 为准。
+- GitHub Actions 工作流已提交；远程未认证状态查询返回 HTTP 403，因此未声称远程 CI 已通过。
+- .env、data/compose.env、数据库、图片和浏览器缓存未加入提交；已检查暂存源文件无可识别 API Key。当前只保留容器版演示服务供本机访问，额外本地验证 API/Worker 与安装包服务已停止。
