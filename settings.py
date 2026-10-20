@@ -15,6 +15,9 @@ class Settings:
     provider: str = 'mock'
     text_model: str = 'gpt-4.1-mini'
     image_model: str = 'gpt-image-1'
+    image_provider: str = 'openai'
+    image_api_key: str = field(default='', repr=False)
+    image_base_url: str = 'https://api.siliconflow.cn/v1'
     max_attempts: int = 3
     lease_seconds: int = 600
     queue_limit: int = 100
@@ -37,6 +40,8 @@ class Settings:
             raise ValueError('API tokens must be unique per owner')
         if self.provider not in {'mock', 'openai'}:
             raise ValueError('PROVIDER must be mock or openai')
+        if self.image_provider not in {'openai', 'siliconflow'}:
+            raise ValueError('IMAGE_PROVIDER must be openai or siliconflow')
         if min(self.max_attempts, self.lease_seconds, self.queue_limit,
                self.requests_per_minute, self.tasks_per_day, self.provider_timeout) <= 0:
             raise ValueError('Limits and timeouts must be positive')
@@ -53,6 +58,12 @@ class Settings:
             provider=os.getenv('PROVIDER', 'mock'),
             text_model=os.getenv('OPENAI_TEXT_MODEL', cls.text_model),
             image_model=os.getenv('OPENAI_IMAGE_MODEL', cls.image_model),
+            # 修改人：wangjinwei
+            # 修改日期：2026-10-20
+            # 修改说明：图片服务使用独立凭据，保留文本服务原有配置。
+            image_provider=os.getenv('IMAGE_PROVIDER', cls.image_provider),
+            image_api_key=os.getenv('IMAGE_API_KEY', ''),
+            image_base_url=os.getenv('IMAGE_BASE_URL', cls.image_base_url),
             max_attempts=int(os.getenv('MAX_ATTEMPTS', '3')),
             lease_seconds=int(os.getenv('LEASE_SECONDS', '600')),
             queue_limit=int(os.getenv('QUEUE_LIMIT', '100')),

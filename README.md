@@ -3,9 +3,9 @@
 面向电商营销的可运行后端 MVP：提交 Brief → 独立 Worker → LangGraph 解析与生成
 → 3 个海报候选 → 选择/编辑/恢复版本 → 人工确认 → PNG / SVG / JSON 导出。
 
-默认使用 **mock 模拟生成**，图片带 SIMULATED 标记。已提供 OpenAI SDK 接口；
-已在配置的 OpenAI 兼容服务上验证结构化文本解析；图片请求返回 500，用户选择稍后配置图像服务。
-**真实图片生成、创意质量和费用尚未验收**，详见 `evals/openai-smoke.json`。
+默认配置保留 **mock 模拟生成**，图片带 SIMULATED 标记；本机真实模式使用 OpenAI 兼容文本服务和硅基流动图片服务。
+用户已确认部署更新后的真实图片生成验证通过；创意质量的量化评测和费用仍未验收。
+`evals/openai-smoke.json` 保留早期 gpt-image-1 请求返回 500 的历史记录，不代表当前硅基流动验证结果。
 
 ## 实际完成范围
 
@@ -71,6 +71,10 @@ export OPENAI_IMAGE_MODEL=gpt-image-1
 
 文本使用 Responses 的 Pydantic 结构化输出，图片使用 Images API，每任务 3 张背景图。
 模型名可替换为账户已授权的兼容模型；实际权限、配额、价格需以账户为准。
+图片可单独使用硅基流动：设置 `IMAGE_PROVIDER=siliconflow`、`IMAGE_API_KEY`、
+`IMAGE_BASE_URL=https://api.siliconflow.cn/v1` 和 `OPENAI_IMAGE_MODEL=Kwai-Kolors/Kolors`。
+文本仍使用原来的 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_TEXT_MODEL`。
+图片下载仅允许硅基流动或阿里云 HTTPS 地址，单张上限 20 MiB。
 SDK 自动重试被禁用；真实生成出现异常或 Worker 租约过期时不会静默重复调用，
 任务转 FAILED，外部请求是否已执行/计费可能未知。不会静默切换 mock 冒充真实结果。
 价格和标题使用独立图层；不承诺扁平图片任意局部编辑。
@@ -178,6 +182,11 @@ NODE_PATH="$PWD/data/browser-tests/node_modules" node scripts/browser_smoke.cjs
 ```bash
 docker compose --env-file data/compose.env --env-file .env -p shopee-agent-demo up -d
 ```
+
+重新打开已配置真实模型的项目时，也应使用上面这条双配置文件命令。
+只指定 `--env-file data/compose.env` 会继续使用原先的 mock 演示配置，不会读取根目录 `.env` 中的模型设置。
+修改 Python 代码或新增供应商适配后，在命令中加上 `--build` 重建镜像；只重启旧容器不会更新代码。
+可访问 `/ready` 检查当前生成模式。任务保留创建时的 provider，切换配置后请新建任务验证，旧的 mock 任务不会自动变成真实生成。
 
 本机 Docker 若要求权限，使用具有 Docker 权限的账户或按本机配置运行该命令。
 更换 PROVIDER 只影响新创建的任务；旧任务按其创建时的供应商模式处理。

@@ -211,8 +211,8 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 | 2 PostgreSQL | 已验收 | PostgreSQL 16、SQLAlchemy/Alembic、重启持久化、开发/Token 身份与跨用户隔离已通过自动化验证；静态 Token 不等同完整生产身份系统 |
 | 3 Worker/幂等/恢复 | 已验收 | 数据库可靠队列、独立进程、幂等冲突/并发、配额/背压、租约恢复/次数上限/旧 Worker 拒写已验证；外部模型 exactly-once 不作保证 |
 | 4 LangGraph | 已验收 | StateGraph、三个图片工具节点、持久检查点、interrupt/Command 确认与故障续跑已在 mock + PostgreSQL 验证，不等同真实模型质量验收 |
-| 5 创意生成编辑 MVP | 进行中 | 本地 Studio、三个候选、不可变版本、文字编辑/恢复、确认与 PNG/SVG/JSON 导出已实现；OpenAI 兼容服务文本解析已实测通过，图片返回 500；用户选择稍后配置图像服务，真实图片生成未验收 |
-| 6 Eval 与可观测性 | 进行中 | 双后端 87 passed、40 个 mock 功能案例、Trace/usage/延迟/配额及检查点控制比较已完成；真实质量/账单/线上负载未测 |
+| 5 创意生成编辑 MVP | 已验收 | 本地 Studio、候选、不可变版本、编辑/恢复、确认及导出已验证；部署切换为兼容文本服务 + 硅基流动图片服务后，用户明确确认真实生成验证通过；真实质量量化与费用另属阶段 6 |
+| 6 Eval 与可观测性 | 进行中 | 双后端 95 passed、40 个 mock 功能案例、Trace/usage/延迟/配额及检查点控制比较已完成；真实质量/账单/线上负载未测 |
 | 7 部署与求职 | 进行中 | 本地 Docker Compose 构建/运行/导出/重启恢复已验证；README、作品集与 CI 配置已提供；线上部署、录屏与远程 CI 结果未验收 |
 
 ### 2026-10-19：Day 1 第 1–2 步核验
@@ -346,3 +346,19 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 - 最终回归 87 passed；SQLite/PostgreSQL 独立进程 smoke 均通过；浏览器创建、预览、修改、确认和 PNG 下载复测通过。最终 mock 功能评测为 40/40，具体延迟及控制比较以 evals/ 中 JSON 为准。
 - GitHub Actions 工作流已提交；远程未认证状态查询返回 HTTP 403，因此未声称远程 CI 已通过。
 - .env、data/compose.env、数据库、图片和浏览器缓存未加入提交；已检查暂存源文件无可识别 API Key。当前只保留容器版演示服务供本机访问，额外本地验证 API/Worker 与安装包服务已停止。
+
+### 2026-10-20：排查页面未调用真实模型
+
+- 运行态证据：/ready 原为 provider=mock；API/Worker 使用 data/compose.env 的演示配置，没有模型凭据。最近任务和工具事件均标记 mock/simulated=true，确实没有请求真实模型。
+- 根目录 .env 已配置 PROVIDER=openai、IMAGE_PROVIDER=siliconflow、文本模型 gpt-6.1-sol 和图片模型 Kwai-Kolors/Kolors；工作目录已有独立图片凭据及硅基流动适配修改，但旧容器未重建，代码哈希与工作目录不一致。保留这些已有修改。
+- 修复部署：同时读取 data/compose.env 与根目录 .env，重建并更新服务，保留原数据库卷。重启后 /ready 为 openai，API/Worker 均确认 siliconflow 图片配置及两类凭据已加载，providers.py/settings.py 哈希与工作目录一致。
+- 验证：双后端回归 95 passed；API/DB healthy、Worker running。检查只读取安全配置字段和事件，不打印凭据、不额外提交付费生成任务。
+- README 补充正确的重新启动方式：双 --env-file；代码更改需 --build。旧任务沿用创建时的 provider，刷新页面后需新建任务验证真实模型。
+- 硅基流动真实出图尚未在本轮触发，不能据部署正确就标记真实图片生成已验收；等待新任务的实际执行结果。
+
+### 2026-10-20：硅基流动出图验收与提交
+
+- 用户在部署修复后明确反馈“我验证通过了”，确认真实生成链路验收通过；依据用户实际操作反馈更新阶段 5，而非声称 Codex 又发起了付费验证。
+- 本次提交包括独立图片凭据/地址、Kwai-Kolors/Kolors 适配、受限 HTTPS 图片下载与大小/重定向检查、供应商回归、Compose 参数转发及正确重启说明。
+- 最近完整双后端回归为 95 passed；本轮只补充验收记录与 README 描述，未修改验证后的业务逻辑，不重复触发真实生成。
+- 保留早期 gpt-image-1 失败评测文件作为历史证据；真实质量量化、费用和线上负载尚未完成。私有 .env、数据库口令及图片资产不加入提交。

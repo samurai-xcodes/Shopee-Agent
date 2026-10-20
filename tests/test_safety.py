@@ -74,6 +74,53 @@ def test_no_silent_mock_fallback_for_openai_task(client, factory, settings, monk
     assert client.get(f'/tasks/{task_id}/versions').json() == []
 
 
+def test_siliconflow_uses_separate_credentials_and_downloads_image(settings, monkeypatch):
+    import openai
+    import providers
+    text_client, image_client = Mock(), Mock()
+    constructor = Mock(side_effect=[text_client, image_client])
+    monkeypatch.setattr(openai, 'OpenAI', constructor)
+    settings = replace(settings, image_provider='siliconflow', image_api_key='test-image-key',
+                       image_model='Kwai-Kolors/Kolors')
+    provider = OpenAIProvider(settings)
+    assert constructor.call_args.kwargs['api_key'] == 'test-image-key'
+    assert constructor.call_args.kwargs['max_retries'] == 0
+    url = 'https://images.siliconflow.cn/test.png'
+    image_client.post.return_value = {'images': [{'url': url}]}
+    data = MockProvider().image(MockProvider().parse('bag'), 0)
+    download = Mock()
+    download.__enter__ = Mock(return_value=download)
+    download.__exit__ = Mock(return_value=False)
+    download.geturl.return_value = url
+    download.read.return_value = data
+    fetch = Mock(return_value=download)
+    monkeypatch.setattr(providers, 'urlopen', fetch)
+    assert provider.image(MockProvider().parse('bag'), 0) == data
+    fetch.assert_called_once_with(url, timeout=settings.provider_timeout)
+    assert image_client.post.call_args.kwargs['body']['model'] == 'Kwai-Kolors/Kolors'
+    text_client.images.generate.assert_not_called()
+    provider.close()
+    text_client.close.assert_called_once()
+    image_client.close.assert_called_once()
+
+
+@pytest.mark.parametrize('images', [[], [{'url': 'http://127.0.0.1/private'}],
+                                    [{'url': 'https://evil.example/test.png'}]])
+def test_siliconflow_rejects_missing_or_untrusted_image_urls(settings, monkeypatch, images):
+    import openai
+    import providers
+    image_client = Mock()
+    monkeypatch.setattr(openai, 'OpenAI', Mock(side_effect=[Mock(), image_client]))
+    fetch = Mock()
+    monkeypatch.setattr(providers, 'urlopen', fetch)
+    provider = OpenAIProvider(replace(settings, image_provider='siliconflow', image_api_key='test'))
+    image_client.post.return_value = {'images': images}
+    with pytest.raises(ValueError):
+        provider.image(MockProvider().parse('bag'), 0)
+    fetch.assert_not_called()
+    provider.close()
+
+
 def test_web_studio_is_served(client):
     response = client.get('/')
     assert response.status_code == 200
