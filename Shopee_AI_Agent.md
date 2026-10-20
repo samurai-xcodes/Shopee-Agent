@@ -4,6 +4,9 @@
 > 用途：供 `shopee-agent` 项目的 Codex/Cursor 读取，作为分阶段开发与教学依据。<br>
 > 注意：这是根据目标岗位和此前讨论制定的**拟开发项目**，不是 Shopee 官方内部系统或对招聘考核内容的保证。
 
+> 最新协作约定（2026-10-20）：按用户要求连续实现并测试，不再提供理解题或测试代码讲解；
+> 环境知识不作重点，只解释关键设计和真实限制。以下 Day 1 的逐题教学记录保留为历史，不再要求逐题等待。
+
 ## 1. 项目目标
 
 开发一个面向电商营销的 **AI Creative Studio Agent**：用户提交创意 Brief（如商品、卖点、品牌、尺寸、视觉风格），系统理解需求、生成多个候选方案、允许用户选择和局部修改、维护版本记录，并在用户确认后导出作品。
@@ -23,7 +26,7 @@
 **分工：**
 - 学习者：提出需求、选择技术方案、解释数据流、审查关键实现、实际验收和复盘；**不强制手写代码**。
 - Codex：小步实现、补充测试、运行并汇报结果、解释关键代码和常见故障。
-- 教学方式：每次一个知识点，优先用当前项目的真实代码教学；讲完提一道理解题，得到反馈再推进。
+- 当前方式：Codex 连续实现、测试和更新进度；仅在关键设计/外部依赖处简述，不以理解题阻塞开发。
 
 **每一步遵循：** 需求 → 设计（含取舍）→ Codex 实现 → 测试 → 阅读关键代码 → 验收 → Git 提交。
 
@@ -65,7 +68,7 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 
 **学习：** WSL 与 Windows 文件路径、虚拟环境、Git 工作流、Codex 权限。
 
-### 阶段 1：FastAPI 与任务状态（第 1 周，当前阶段）
+### 阶段 1：FastAPI 与任务状态（第 1 周，已验收）
 **目标：** 先把任务提交与查询链路运行起来，不接模型。
 
 **范围：**
@@ -81,7 +84,7 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 
 **不要提前加入：** 数据库、真实模型 API、前端、任务队列。
 
-### 阶段 2：持久化与用户隔离（第 2 周前半）
+### 阶段 2：持久化与用户隔离（第 2 周前半，已实现验证）
 **目标：** 重启服务后任务仍然存在，并防止跨用户访问。
 
 **范围：** PostgreSQL；任务表（ID、owner_id、prompt、status、created_at、updated_at、result_ref、error）；数据库迁移；基础鉴权的开发方案（可以先用测试身份，不能把测试身份冒充生产安全）。
@@ -108,7 +111,7 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 
 **学习重点：** Agent 与固定工作流的边界、结构化输出、Tool Calling、图状态、检查点、模型幻觉与工具权限。
 
-### 阶段 5：创意生成 MVP 与编辑（第 5 周）
+### 阶段 5：创意生成 MVP 与编辑（第 5 周，真实模型验收待凭据）
 **目标：** 展示适合 Shopee 岗位场景的真实产品能力。
 
 **范围：** 接入授权的文本/图像模型 API；生成 2–3 个候选海报；作品版本管理；用户选择与修改；优先对独立文字图层做确定性编辑；扁平图像使用受限的局部编辑流程；导出。
@@ -167,12 +170,12 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 先读取 AGENTS.md、现有 README 和代码，检查实际进度，绝不把规划中的功能当作已完成。
 我有两年 Android Framework 经验，但 Python 后端不熟；我不希望亲自手写代码。
 你负责小步编写、修改、运行和测试；我负责需求、设计、理解与验收。
-每次仅推进一个小知识点：先用中文说明为什么这样设计和数据如何流动，再展示并解释真实代码的关键几行，然后出一道理解题，等待我回答。
-不要一次输出长篇教程；原则上单次教学说明控制在 300 字左右。
-在我确认理解前，不要主动进入下一阶段；不要为了演示提前添加数据库、Redis、LangGraph 或前端。
+连续推进路线图中的功能，由你编写并测试代码；不需要理解题，也不需要解释测试程序。
+只在关键设计与真实外部依赖处简述，不输出长篇教程。
+各阶段按真实实现和验证证据更新，不把模拟模式、配置文件或计划当作真实服务验收。
 每次修改后运行相关测试，说明修改文件、测试结果、已知限制和下一步。
 优先参考现有项目和可靠开源实现，但不要盲目引入依赖；禁止泄露密钥。
-现在从阶段 1 FastAPI 与任务状态开始，先确认现有代码，再教我第一个知识点。
+从第 10 节的真实进度继续实现，不重复已验证步骤；不将未验证的外部服务标记为完成。
 ```
 
 ## 8. 开发记录模板（每个功能复用）
@@ -203,14 +206,14 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 
 | 阶段 | 状态 | 完成证据 |
 |---|---|---|
-| 0 环境与规范 | 进行中 | 环境与忽略规则已核验；README、依赖清单与干净环境验证已完成；依赖管理理解题反馈待完成，Git 交付见下方记录 |
+| 0 环境与规范 | 已验收 | 环境、README、依赖安装与初始 Git 推送已验证；用户明确取消后续理解题，不再以依赖题阻塞 |
 | 1 FastAPI 任务接口 | 已验收 | 三个接口已实现，pytest 14 passed；真实进程重启后旧任务返回 404；学习者确认 Swagger 创建 201、查询 200，ID/prompt 一致，并理解输入校验、内存生命周期与 HTTP/业务状态的区别 |
-| 2 PostgreSQL | 未开始 | — |
-| 3 Worker/幂等/恢复 | 未开始 | — |
-| 4 LangGraph | 未开始 | — |
-| 5 创意生成编辑 MVP | 未开始 | — |
-| 6 Eval 与可观测性 | 未开始 | — |
-| 7 部署与求职 | 未开始 | — |
+| 2 PostgreSQL | 已验收 | PostgreSQL 16、SQLAlchemy/Alembic、重启持久化、开发/Token 身份与跨用户隔离已通过自动化验证；静态 Token 不等同完整生产身份系统 |
+| 3 Worker/幂等/恢复 | 已验收 | 数据库可靠队列、独立进程、幂等冲突/并发、配额/背压、租约恢复/次数上限/旧 Worker 拒写已验证；外部模型 exactly-once 不作保证 |
+| 4 LangGraph | 已验收 | StateGraph、三个图片工具节点、持久检查点、interrupt/Command 确认与故障续跑已在 mock + PostgreSQL 验证，不等同真实模型质量验收 |
+| 5 创意生成编辑 MVP | 进行中 | 本地 Studio、三个候选、不可变版本、文字编辑/恢复、确认与 PNG/SVG/JSON 导出已实现；OpenAI 兼容服务文本解析已实测通过，图片返回 500；用户选择稍后配置图像服务，真实图片生成未验收 |
+| 6 Eval 与可观测性 | 进行中 | 双后端 87 passed、40 个 mock 功能案例、Trace/usage/延迟/配额及检查点控制比较已完成；真实质量/账单/线上负载未测 |
+| 7 部署与求职 | 进行中 | 本地 Docker Compose 构建/运行/导出/重启恢复已验证；README、作品集与 CI 配置已提供；线上部署、录屏与远程 CI 结果未验收 |
 
 ### 2026-10-19：Day 1 第 1–2 步核验
 
@@ -288,3 +291,51 @@ PostgreSQL（任务、版本、审计）   可靠任务投递机制 / Redis 队�
 - 初始提交范围：`.gitignore`、`AGENTS.md`、`README.md`、本路线图、`main.py`、`test_main.py` 和两个 requirements 文件。虚拟环境、缓存及 `.env` 均被忽略。
 - 提交前再次运行 pytest，结果 14 passed。确切提交 ID 与远程交付状态以 Git 历史、推送结果及远程 refs 核验为准。
 - 本轮仅交付已有阶段成果；依赖管理理解题尚未回答，阶段 0 不据 Git 操作自动标记为学习验收完成，阶段 2–7 未开始。
+
+### 2026-10-20：阶段 2 第 1 步（任务表模型）
+
+- 用户要求环境知识不作为教学重点并进入下一阶段；按该偏好推进，不以尚未回答依赖理解题阻塞阶段 2。
+- 调研：[SQLAlchemy 官方仓库](https://github.com/sqlalchemy/sqlalchemy)与 [ORM Quick Start](https://docs.sqlalchemy.org/en/20/orm/quickstart.html)、[Psycopg 官方示例](https://www.psycopg.org/psycopg3/docs/basic/usage.html)、[SQLModel 官方仓库](https://github.com/fastapi/sqlmodel)。SQLAlchemy/SQLModel 为 MIT，Psycopg 为 LGPL；均有官方文档和维护版本。
+- 比较：Psycopg 直接执行 SQL、依赖层较少但需手动映射；SQLModel 依赖 SQLAlchemy/Pydantic、模型写法简洁但多一层封装；选择 SQLAlchemy 原生映射与 Session 事务，便于后续 PostgreSQL 和迁移。未复制第三方代码。
+- 依赖：采用仍有维护更新且与本轮官方 2.0 文档一致的 SQLAlchemy 2.0.55（2026-10-16 版本）；已知当前另有 2.1 系列，本次未使用旧式 Query API。
+- 新增 `database_models.py`：Base 与 TaskRecord，先映射 task_id 主键、非空 prompt、非空 status 与 ORM 插入默认 PENDING；这不是完整阶段 2 表结构，owner_id、时间戳、result_ref、error 后续小步补充。
+- 新增 `test_database_models.py`：用 pytest 临时目录中的 SQLite 文件验证提交后重建 Engine 读取、flush 后回滚、重复主键失败且原记录不变；每个用例独立建表，结束释放连接。SQLite 只作本轮测试，不替代 PostgreSQL 验收。
+- 当前 PATH 未发现 psql/postgres/pg_ctl/docker；本轮未安装数据库服务，不据此声称没有其他远程数据库。API、Swagger 和原内存任务行为保持原样；没有迁移、数据库注入、鉴权或用户隔离。
+- 表约束目前只有主键及非空；数据库层尚未约束空白 prompt 或状态集合，不能把 Pydantic 校验误认为 ORM 自动提供的校验。`create_all` 仅用于测试建表，不是正式迁移机制。
+- 验证：`.venv/bin/python -m pytest -q` 为 17 passed（原 API 14 个、新数据库行为 3 个）；pip check 无依赖冲突，git diff --check 通过。没有执行 PostgreSQL 测试或应用服务重启后的持久化验收。
+- 本轮学习点：对象与表/行的映射、主键、Session 的 add/commit/flush/rollback。等待理解题反馈后继续接入数据库，不要求学习者手写代码。
+
+### 2026-10-20：连续交付模式与完整 MVP 实现
+
+- 用户取消理解题和测试讲解，要求优先完成项目；已同步 AGENTS.md 与本路线图，不再等待逐题反馈。真实模型供应商选择 OpenAI。
+- 完成持久化 API 与身份隔离：Task 表含 owner_id、状态、UTC Unix 时间、结果引用、错误、尝试次数、租约及 trace_id；Alembic 0001 管理业务表，PostgresSaver.setup 在迁移步骤初始化官方检查点表。测试验证重复迁移安全。
+- 认证分开发身份 X-Dev-User（明确可伪造、仅本地）与配置式 Bearer Token；Token 模式忽略开发身份头。创建、列表、查询、事件、版本、预览、编辑、恢复、确认、重试、导出和指标按 owner 限定，跨用户资源返回 404。
+- 采用 PostgreSQL 任务表作为可靠队列，替代当前规模下的 Redis/Celery，入队与任务创建同事务；每用户及全局 admission 锁保护幂等、配额和队列容量，数据库唯一约束提供额外保证。未复制第三方队列实现。
+- 独立 Worker 使用 FOR UPDATE SKIP LOCKED、条件更新、lease_token 和到期时间领取/写回，支持有限重试、指数退避、崩溃租约恢复、部分节点续跑和数据库暂时中断后的轮询恢复。旧 Worker 无法发布已过期结果。
+- LangGraph 采用 Brief 解析 → 3 个独立图片工具节点 → interrupt 人工确认 → Command(resume) 的受控工作流。使用 SqliteSaver/PostgresSaver；确认恢复和第二张图故障恢复均有测试，不用内存 checkpointer 冒充持久化。
+- 创意功能：本地 HTML/JS Studio、3 个候选、PNG 预览、不可变版本、title/price 白名单修改、恢复旧版副本、重复确认幂等、确认成功后 PNG/SVG/JSON 导出。图片内容地址存储，修改价格保持 image_ref 不变；SVG 文本转义，资产路径受限，PNG 支持 CJK 字体与标题换行。没有任意扁平图 inpainting。
+- OpenAI 适配器使用官方 SDK 的 Responses 结构化输出和 Images API；模型名从环境配置，SDK max_retries=0，文本 store=False。供应商异常先清理再进入图检查点，日志/对外错误不保存原始供应商错误正文。未配置 Key 时不会自动用 mock 冒充成功。
+- 真实生成失败/结果未知时不自动重复计费；人工 retry 需要明确 acknowledge_possible_duplicate_charge。任何外部模型调用与检查点之间仍存在副作用窗口，不承诺 exactly-once 或绝不重复计费。
+- 观测：请求 X-Trace-ID、持久 task trace_id、节点/工具阶段、耗时、模型、模拟标记和可用 usage；按用户提供 P50/P95、任务状态及调用计数。无真实账单时费用字段为 null。
+- 验证：SQLite + 原生 PostgreSQL 16 双后端回归 87 passed；独立 API/Worker 进程脚本在 SQLite 与 PostgreSQL 上均通过，验证 API 重启后任务仍存在，并能确认/导出 PNG。数据库故障、Worker 失效、幂等并发、容量并发及越权有专门回归。
+- evals/cases.json 含 40 个模拟功能案例，最新一轮 40/40 通过；端到端 P50 190.38ms、P95 226.44ms，仅为本机 SQLite/mock 记录，不代表真实模型质量、生产延迟或账单。
+- evals/checkpoint_comparison.json 是控制实验：朴素“确认时重新生成三张图”实验基线为 3 次/101.15ms，实际持久确认恢复为 0 次/15.14ms。该基线是对照实验，不是已有线上版本的历史数据；不推算真实 API 费用。
+- 交付：README、架构与来源记录、作品集描述/3 个故障案例、40 案例评测、真实进程 smoke、部署 smoke、浏览器 smoke、Dockerfile/Compose、GitHub Actions。requirements-runtime.lock 锁定 Linux/Python 3.12 运行依赖闭包，暂未添加哈希。
+- Docker Compose 已实际构建并启动 PostgreSQL/API/Worker，API 与 DB 健康；容器内完整创建→候选→价格编辑→确认→PNG 导出通过；重启 API 后已完成任务保留，重启 PostgreSQL 后仍能处理新任务。构建验证复用了本机缓存的发行包和镜像源，不引入仓库外业务代码。
+- 本机 .env/data/compose.env、数据库、图片、浏览器缓存及安装包不提交 Git；数据库口令随机生成。当前公开接口仅绑定本机地址，默认 mock + 开发身份。
+- 浏览器验证：使用 Linux Headless Chrome 实际完成提交、3 个候选预览、价格修改、确认、PNG 下载及刷新后同身份查询，未发现 JavaScript 错误。截图和下载产物保存在被忽略的 data/，不把界面测试误记为真实图像生成。
+- 剩余真实验收：OpenAI Key/账户模型权限、真实创意质量与账单评测、线上负载/部署、录屏与长期监控；不能将这些项标记完成。凭据随后已配置，真实文本解析通过、图片供应商返回 500；用户选择先交付，图像服务稍后配置。Git 交付结果以提交和远程 refs 核验为准。
+
+### 2026-10-20：最终浏览器与容器验证
+
+- Linux Headless Chrome 真实浏览器回归通过：页面提交 → 三个候选 → 价格保存为新版本 → 人工确认 → SUCCESS → 下载有效 PNG；没有 JavaScript 错误。浏览器工具安装遇到下载缓慢后，使用与官方发行包校验值一致的镜像包验证，没有修改浏览器安全策略。
+- 容器 API /ready 为 200，PostgreSQL 与 API 均 healthy，Worker 正常运行。已验证 API 容器重启后完成任务仍可查询；数据库容器重启后仍可完成新任务生成、编辑、确认和导出。
+- 本地演示入口为 http://127.0.0.1:8002/，默认 mock + dev 身份；不需要真实 Key 即可验收工程链路，仍不能据此验收真实模型输出。
+
+### 2026-10-20：真实供应商验证与交付决定
+
+- 检测到本机配置凭据后，以公开合成的咖啡杯 Brief 执行真实验证，没有发送私人业务内容。
+- 配置的 OpenAI 兼容服务、文本模型 gpt-6.1-sol 接受 Responses 结构化输出，Pydantic Brief 解析成功；第一张 gpt-image-1 图片请求返回 InternalServerError（HTTP 500），任务按设计 FAILED。
+- 图片未自动重试，未静默替换 mock；只读模型列表未列出图像模型，但不据此断言供应商一定不支持图片。需要后续确认可用 Images API/模型配置。
+- 用户明确选择“图像服务稍后配置，先交付”。因此继续使用 mock 演示，不将真实图片质量或整个路线图标记完成。
+- evals/openai-smoke.json 保存脱敏验证摘要、可用文本 token 数和失败类型；不包含凭据、供应商主机地址或原始错误正文，账单费用仍为 null。

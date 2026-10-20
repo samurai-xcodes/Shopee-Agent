@@ -1,3 +1,4 @@
+-c requirements-runtime.lock
 -r requirements.txt
 
 # pytest runs tests; current Starlette TestClient prefers httpx2.

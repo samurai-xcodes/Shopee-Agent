@@ -24,10 +24,10 @@ to prepare for AI Agent engineering interviews.
 The developer has Android Framework experience
 but is learning Python backend engineering.
 
-For every task:
-1. Explain the implementation plan in Chinese.
-2. Identify the core concepts to learn.
-3. Implement in small, reviewable steps.
-4. Explain important code in Chinese.
-5. Provide one interview-style question.
-6. Do not make unrelated changes.
+Current collaboration preference (updated by the user on 2026-10-20):
+1. Implement and test continuously, prioritizing completion speed.
+2. Do not ask comprehension/interview questions or explain test code unless requested.
+3. Explain only important design decisions and material limitations in Chinese.
+4. Environment topics are not a teaching priority; handle them autonomously when possible.
+5. Keep roadmap status factual; simulated generation is not real model validation.
+6. Do not make unrelated changes or hardcode secrets.

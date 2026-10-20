@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shopee Creative Studio</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#172033;background:#f4f5f8}*{box-sizing:border-box}body{margin:0}header{background:#131c2e;color:white;padding:28px 5vw;display:flex;justify-content:space-between;align-items:center}header h1{margin:0;font-size:23px;letter-spacing:-.5px}header span{font-size:12px;color:#c3cad8}main{max-width:1320px;margin:auto;padding:28px}.layout{display:grid;grid-template-columns:310px 1fr;gap:24px}.panel{background:white;border:1px solid #e2e5eb;border-radius:16px;padding:24px;margin-bottom:20px}h2{font-size:17px;margin:0 0 18px}label{display:block;font-size:13px;font-weight:600;margin:16px 0 7px}input,textarea{width:100%;font:inherit;border:1px solid #cbd2de;border-radius:9px;padding:11px;background:#fafbfc}textarea{resize:vertical;min-height:140px;font-size:14px}button,.link{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#edf0f5;color:#172033}button:hover{filter:brightness(.95)}button:disabled{opacity:.45;cursor:wait}.primary{background:#ee512d;color:white}.wide{width:100%;margin-top:16px}.muted{font-size:12px;color:#64748b;line-height:1.7}.badge{display:inline-block;font-size:11px;padding:5px 9px;border-radius:30px;background:#fff0e8;color:#c44722}.topline{display:flex;justify-content:space-between;align-items:center;gap:10px}.tasks{display:grid;gap:8px;margin-top:16px}.task{width:100%;text-align:left;background:#f5f6f9;padding:12px;display:grid;gap:6px}.task strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.task small{font-weight:400;color:#64748b}.candidates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{border:1px solid #e2e5eb;border-radius:12px;overflow:hidden;background:#fff}.card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#eef0f5}.card .body{padding:14px}.card .body p{font-size:13px;overflow-wrap:anywhere}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.actions button{font-size:11px;padding:8px}.status{font-size:14px;line-height:1.8;overflow-wrap:anywhere}.empty{padding:70px 20px;text-align:center;color:#64748b}.notice{padding:12px 16px;background:#fff5e9;border:1px solid #fbd9b3;border-radius:10px;font-size:13px;margin-bottom:24px}#message{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#b42318;min-height:20px}a{color:#d84925}footer{padding:0 28px 24px;font-size:12px;color:#64748b}@media(max-width:1050px){.candidates{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.layout{grid-template-columns:1fr}.candidates{grid-template-columns:1fr}main{padding:16px}header{padding:22px}header span{display:none}}
+</style>
+</head>
+<body>
+<header><h1>Creative Studio <span> / SHOPEE AGENT</span></h1><a href="/docs" style="color:#fff;font-size:13px">API 文档 ↗</a></header>
+<main>
+<div id="mode" class="notice">正在连接服务…</div>
+<div class="layout">
+<aside>
+<section class="panel"><h2>创建创意任务</h2>
+<label for="identity">开发身份</label><input id="identity" value="demo-user" autocomplete="off">
+<div id="tokenGroup" hidden><label for="token">Bearer Token</label><input id="token" type="password" autocomplete="off" placeholder="仅保存在当前页面内存中"></div>
+<label for="prompt">创意 Brief</label><textarea id="prompt" placeholder="例如：为轻便运动鞋设计促销海报，售价 99，简洁蓝色风格。"></textarea>
+<button id="submit" class="primary wide">提交并生成 3 个候选</button>
+<p class="muted">任务在独立 Worker 中执行。价格与标题是独立图层，确认后可导出。</p>
+<div id="message" role="status" aria-live="polite"></div>
+</section>
+<section class="panel"><div class="topline"><h2 style="margin:0">我的任务</h2><button id="refresh">刷新</button></div><div id="tasks" class="tasks"></div></section>
+</aside>
+<section class="panel"><div class="topline"><h2 style="margin:0">候选与版本</h2><span id="state" class="badge">等待提交</span></div>
+<p id="details" class="status muted">选择任务后，可以查看候选、修改价格并确认导出。</p>
+<div id="exports" class="actions"></div><div id="versions" class="candidates"></div><div id="empty" class="empty">从一个商品创意开始。<br>所有修改会保留为新版本。</div>
+</section>
+</div>
+</main><footer>本地工程演示 · 模拟结果与真实模型结果明确区分 · 不连接 Shopee 内部系统</footer>
+<script>
+'use strict';
+const el=id=>document.getElementById(id);
+let authMode='dev', current=null, timer=null, urls=[], lastSignature='', rendering=false, pendingSubmission=null;
+function headers(){return authMode==='dev'?{'X-Dev-User':el('identity').value}:{Authorization:'Bearer '+el('token').value};}
+async function api(path, options={}){
+ const response=await fetch(path,{...options,headers:{...headers(),...(options.body?{'Content-Type':'application/json'}:{}),...options.headers}});
+ if(!response.ok){let error;try{error=await response.json();}catch{error={detail:response.statusText};}throw Error(response.status+' · '+JSON.stringify(error.detail));}
+ return response;
+}
+function node(tag,text,className){const item=document.createElement(tag);if(text!==undefined)item.textContent=text;if(className)item.className=className;return item;}
+function report(error){el('message').textContent=error.message||String(error);}
+function action(label,fn,primary=false){const button=node('button',label,primary?'primary':'');button.onclick=async()=>{button.disabled=true;el('message').textContent='';try{await fn();}catch(error){report(error);}finally{button.disabled=false;}};return button;}
+async function list(){const tasks=await(await api('/tasks')).json();el('tasks').replaceChildren();for(const task of tasks){const button=node('button',undefined,'task');button.append(node('strong',task.prompt),node('small',task.status+' · '+new Date(task.created_at*1000).toLocaleTimeString()));button.onclick=()=>selectTask(task.task_id).catch(report);el('tasks').append(button);}}
+async function download(format){const response=await api('/tasks/'+current+'/export?format='+format);const url=URL.createObjectURL(await response.blob());const link=node('a');link.href=url;link.download=current+'.'+format;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function selectTask(id){current=id;lastSignature='';clearTimeout(timer);while(rendering)await new Promise(resolve=>setTimeout(resolve,50));await poll();}
+async function poll(){
+ if(rendering)return;rendering=true;
+ let keepPolling=false;
+ try{
+  const id=current;if(!id)return;
+  const task=await(await api('/tasks/'+id)).json();if(current!==id)return;
+  keepPolling=['PENDING','RUNNING'].includes(task.status);el('state').textContent=task.status;el('details').textContent=task.prompt+' · '+task.provider+' · '+task.task_id+(task.error?' · '+task.error:'');
+  el('exports').replaceChildren();if(task.status==='FAILED')el('exports').append(action('重试任务',async()=>{if(task.provider==='openai'&&!confirm('上次调用的计费结果可能未知，重试可能再次计费。确认重试？'))return;await api('/tasks/'+id+'/retry',{method:'POST',body:JSON.stringify({acknowledge_possible_duplicate_charge:task.provider==='openai'})});await pollAfterAction();},true));if(task.status==='SUCCESS')for(const format of ['png','svg','json'])el('exports').append(action('下载 '+format.toUpperCase(),()=>download(format),true));
+  const versions=await(await api('/tasks/'+id+'/versions')).json();if(current!==id)return;
+  const signature=task.status+versions.map(v=>v.version_id).join(',');
+  if(signature!==lastSignature){
+   lastSignature=signature;urls.forEach(URL.revokeObjectURL);urls=[];el('versions').replaceChildren();el('empty').hidden=versions.length>0;
+   for(const version of [...versions].reverse()){
+    const card=node('article',undefined,'card'),image=node('img');image.alt='版本 '+version.number+' 海报预览';
+    const body=node('div',undefined,'body');body.append(node('span','V'+version.number+(version.document.simulated?' · 模拟':' · OpenAI'),'badge'),node('p',version.document.title));
+    const price=node('input');price.value=version.document.price;price.placeholder='价格文字';price.setAttribute('aria-label','版本 '+version.number+' 的价格');price.disabled=task.status!=='WAITING_APPROVAL';body.append(price);
+    if(task.status==='WAITING_APPROVAL'){
+     const actions=node('div',undefined,'actions');
+     actions.append(action('保存价格',async()=>{await api('/tasks/'+id+'/versions/'+version.version_id,{method:'PATCH',body:JSON.stringify({price:price.value})});lastSignature='';await pollAfterAction();}),
+      action('确认此版本',async()=>{await api('/tasks/'+id+'/approve',{method:'POST',body:JSON.stringify({version_id:version.version_id})});await pollAfterAction();},true),
+      action('恢复为新版本',async()=>{await api('/tasks/'+id+'/versions/'+version.version_id+'/restore',{method:'POST'});lastSignature='';await pollAfterAction();}));body.append(actions);
+    }
+    card.append(image,body);el('versions').append(card);
+    const preview=await api('/tasks/'+id+'/versions/'+version.version_id+'/preview');if(current!==id)return;const url=URL.createObjectURL(await preview.blob());urls.push(url);image.src=url;
+   }
+  }
+ }finally{rendering=false;clearTimeout(timer);if(current&&keepPolling)timer=setTimeout(()=>poll().catch(report),2000);}
+}
+async function pollAfterAction(){clearTimeout(timer);while(rendering)await new Promise(resolve=>setTimeout(resolve,50));await poll();await list();}
+el('submit').onclick=async()=>{el('submit').disabled=true;el('message').textContent='';try{const prompt=el('prompt').value;if(!pendingSubmission||pendingSubmission.prompt!==prompt)pendingSubmission={key:crypto.randomUUID(),prompt};const task=await(await api('/tasks',{method:'POST',headers:{'Idempotency-Key':pendingSubmission.key},body:JSON.stringify({prompt})})).json();pendingSubmission=null;await list();await selectTask(task.task_id);}catch(error){report(error);}finally{el('submit').disabled=false;}};
+el('refresh').onclick=()=>list().catch(report);
+for(const id of ['identity','token'])el(id).addEventListener('change',()=>{current=null;pendingSubmission=null;clearTimeout(timer);lastSignature='';urls.forEach(URL.revokeObjectURL);urls=[];el('versions').replaceChildren();el('exports').replaceChildren();el('details').textContent='身份已切换，请选择任务';el('empty').hidden=false;el('state').textContent='等待选择';list().catch(report);});
+fetch('/ready').then(r=>r.json()).then(info=>{authMode=info.auth_mode;el('tokenGroup').hidden=authMode!=='token';el('identity').disabled=authMode==='token';el('mode').textContent=(info.provider==='mock'?'模拟模式：候选为本地模拟图片，不代表真实 AI 生成质量。':'OpenAI 模式：生成会调用已配置的模型并可能计费。')+(authMode==='dev'?' 开发身份仅限本机演示。':' 请使用 Bearer Token 登录。');if(authMode==='dev')return list();}).catch(report);
+</script>
+</body></html>

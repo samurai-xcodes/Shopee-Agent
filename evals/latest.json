@@ -1,0 +1,253 @@
+{
+  "mode": "mock_functional_only",
+  "cases": 40,
+  "passed": 40,
+  "pass_rate": 1.0,
+  "end_to_end_p50_ms": 190.38,
+  "end_to_end_p95_ms": 226.44,
+  "real_model_quality": "not_measured",
+  "real_provider_cost_usd": null,
+  "notes": "Local SQLite + mock images. No real model quality, billing or production latency claim.",
+  "results": [
+    {
+      "id": "case-01",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 316.57
+    },
+    {
+      "id": "case-02",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 209.3
+    },
+    {
+      "id": "case-03",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 205.73
+    },
+    {
+      "id": "case-04",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 194.97
+    },
+    {
+      "id": "case-05",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 188.06
+    },
+    {
+      "id": "case-06",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 192.46
+    },
+    {
+      "id": "case-07",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 190.43
+    },
+    {
+      "id": "case-08",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 196.74
+    },
+    {
+      "id": "case-09",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 190.38
+    },
+    {
+      "id": "case-10",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 196.06
+    },
+    {
+      "id": "case-11",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 188.4
+    },
+    {
+      "id": "case-12",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 180.25
+    },
+    {
+      "id": "case-13",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 185.55
+    },
+    {
+      "id": "case-14",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 192.64
+    },
+    {
+      "id": "case-15",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 206.49
+    },
+    {
+      "id": "case-16",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 209.65
+    },
+    {
+      "id": "case-17",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 210.11
+    },
+    {
+      "id": "case-18",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 208.5
+    },
+    {
+      "id": "case-19",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 207.38
+    },
+    {
+      "id": "case-20",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 193.8
+    },
+    {
+      "id": "case-21",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 210.25
+    },
+    {
+      "id": "case-22",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 233.37
+    },
+    {
+      "id": "case-23",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 226.44
+    },
+    {
+      "id": "case-24",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 189.53
+    },
+    {
+      "id": "case-25",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 194.1
+    },
+    {
+      "id": "case-26",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 185.61
+    },
+    {
+      "id": "case-27",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 211.25
+    },
+    {
+      "id": "case-28",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 182.68
+    },
+    {
+      "id": "case-29",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 179.19
+    },
+    {
+      "id": "case-30",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 178.64
+    },
+    {
+      "id": "case-31",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 176.56
+    },
+    {
+      "id": "case-32",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 178.09
+    },
+    {
+      "id": "case-33",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 174.53
+    },
+    {
+      "id": "case-34",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 175.46
+    },
+    {
+      "id": "case-35",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 180.65
+    },
+    {
+      "id": "case-36",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 182.0
+    },
+    {
+      "id": "case-37",
+      "category": "minimal",
+      "passed": true,
+      "latency_ms": 182.01
+    },
+    {
+      "id": "case-38",
+      "category": "festival",
+      "passed": true,
+      "latency_ms": 179.52
+    },
+    {
+      "id": "case-39",
+      "category": "english",
+      "passed": true,
+      "latency_ms": 182.3
+    },
+    {
+      "id": "case-40",
+      "category": "long",
+      "passed": true,
+      "latency_ms": 181.21
+    }
+  ]
+}

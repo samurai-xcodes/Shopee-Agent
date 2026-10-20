@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agent
+      POSTGRES_DB: agent
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U agent -d agent']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: &app-build
+      context: .
+      args:
+        PIP_FIND_LINKS: ${PIP_FIND_LINKS:-}
+        PIP_NO_INDEX: ${PIP_NO_INDEX:-}
+        PIP_TRUSTED_HOST: ${PIP_TRUSTED_HOST:-}
+        DEBIAN_MIRROR: ${DEBIAN_MIRROR:-http://deb.debian.org}
+    environment: &app-env
+      DATABASE_URL: postgresql+psycopg://agent:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/agent
+      AUTH_MODE: ${AUTH_MODE:-dev}
+      API_TOKENS_JSON: ${API_TOKENS_JSON:-{}}
+      PROVIDER: ${PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_TEXT_MODEL: ${OPENAI_TEXT_MODEL:-gpt-4.1-mini}
+      OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-gpt-image-1}
+      PROVIDER_TIMEOUT: ${PROVIDER_TIMEOUT:-60}
+      MAX_ATTEMPTS: ${MAX_ATTEMPTS:-3}
+      LEASE_SECONDS: ${LEASE_SECONDS:-600}
+      QUEUE_LIMIT: ${QUEUE_LIMIT:-100}
+      REQUESTS_PER_MINUTE: ${REQUESTS_PER_MINUTE:-20}
+      TASKS_PER_DAY: ${TASKS_PER_DAY:-100}
+      STORAGE_DIR: /app/data/assets
+    command: [python, -m, database]
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    build: *app-build
+    restart: unless-stopped
+    environment: *app-env
+    ports:
+      - '127.0.0.1:8002:8000'
+    volumes:
+      - assets:/app/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  worker:
+    build: *app-build
+    restart: unless-stopped
+    environment: *app-env
+    command: [python, -m, worker]
+    healthcheck:
+      disable: true
+    volumes:
+      - assets:/app/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  postgres-data:
+  assets:

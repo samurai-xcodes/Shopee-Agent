@@ -1,0 +1,12 @@
+{
+  "mode": "controlled_mock_comparison",
+  "naive_regeneration_baseline": {
+    "image_calls": 3,
+    "latency_ms": 101.15
+  },
+  "persisted_approval_resume": {
+    "image_calls": 0,
+    "latency_ms": 15.14
+  },
+  "limitations": "Synthetic naive baseline, local mock provider. No real API cost or production performance claim."
+}

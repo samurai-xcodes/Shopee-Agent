@@ -1,0 +1,202 @@
+[
+  {
+    "id": "case-01",
+    "category": "minimal",
+    "prompt": "运动鞋：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-02",
+    "category": "festival",
+    "prompt": "运动鞋：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-03",
+    "category": "english",
+    "prompt": "运动鞋：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-04",
+    "category": "long",
+    "prompt": "运动鞋：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-05",
+    "category": "minimal",
+    "prompt": "保温杯：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-06",
+    "category": "festival",
+    "prompt": "保温杯：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-07",
+    "category": "english",
+    "prompt": "保温杯：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-08",
+    "category": "long",
+    "prompt": "保温杯：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-09",
+    "category": "minimal",
+    "prompt": "无线耳机：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-10",
+    "category": "festival",
+    "prompt": "无线耳机：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-11",
+    "category": "english",
+    "prompt": "无线耳机：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-12",
+    "category": "long",
+    "prompt": "无线耳机：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-13",
+    "category": "minimal",
+    "prompt": "防晒霜：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-14",
+    "category": "festival",
+    "prompt": "防晒霜：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-15",
+    "category": "english",
+    "prompt": "防晒霜：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-16",
+    "category": "long",
+    "prompt": "防晒霜：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-17",
+    "category": "minimal",
+    "prompt": "咖啡豆：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-18",
+    "category": "festival",
+    "prompt": "咖啡豆：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-19",
+    "category": "english",
+    "prompt": "咖啡豆：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-20",
+    "category": "long",
+    "prompt": "咖啡豆：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-21",
+    "category": "minimal",
+    "prompt": "背包：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-22",
+    "category": "festival",
+    "prompt": "背包：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-23",
+    "category": "english",
+    "prompt": "背包：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-24",
+    "category": "long",
+    "prompt": "背包：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-25",
+    "category": "minimal",
+    "prompt": "台灯：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-26",
+    "category": "festival",
+    "prompt": "台灯：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-27",
+    "category": "english",
+    "prompt": "台灯：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-28",
+    "category": "long",
+    "prompt": "台灯：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-29",
+    "category": "minimal",
+    "prompt": "瑜伽垫：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-30",
+    "category": "festival",
+    "prompt": "瑜伽垫：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-31",
+    "category": "english",
+    "prompt": "瑜伽垫：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-32",
+    "category": "long",
+    "prompt": "瑜伽垫：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-33",
+    "category": "minimal",
+    "prompt": "手表：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-34",
+    "category": "festival",
+    "prompt": "手表：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-35",
+    "category": "english",
+    "prompt": "手表：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-36",
+    "category": "long",
+    "prompt": "手表：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  },
+  {
+    "id": "case-37",
+    "category": "minimal",
+    "prompt": "洗发水：简洁白底，突出商品，价格 99"
+  },
+  {
+    "id": "case-38",
+    "category": "festival",
+    "prompt": "洗发水：节日风格，价格 129，不增加未经提供的折扣"
+  },
+  {
+    "id": "case-39",
+    "category": "english",
+    "prompt": "洗发水：Clean ecommerce poster, price $29, no invented claims"
+  },
+  {
+    "id": "case-40",
+    "category": "long",
+    "prompt": "洗发水：使用蓝绿色，保留底部文字区域，突出商品本身，不添加认证和虚假评价"
+  }
+]

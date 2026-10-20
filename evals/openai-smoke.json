@@ -1,0 +1,18 @@
+{
+  "mode": "live_openai_compatible_smoke",
+  "text_model": "gpt-6.1-sol",
+  "image_model": "gpt-image-1",
+  "structured_text_parse_succeeded": true,
+  "image_generation_succeeded": false,
+  "image_error_type": "InternalServerError",
+  "image_http_status": 500,
+  "image_generation_attempts": 1,
+  "automatic_image_retries": 0,
+  "provider_cost_usd": null,
+  "text_usage": {
+    "input_tokens": 149,
+    "output_tokens": 166,
+    "total_tokens": 315
+  },
+  "notes": "Configured compatible service accepted structured text; first image request failed. User chose to defer image service configuration. No credentials, endpoint host or raw provider error bodies are recorded."
+}
